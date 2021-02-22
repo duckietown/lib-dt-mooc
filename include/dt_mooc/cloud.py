@@ -4,7 +4,12 @@ import re
 import torch
 from dt_data_api import DataClient
 
-from dt_mooc.utils import plain_progress_monitor
+try:
+    from dt_mooc.colab import ColabProgressBar
+    _pbar = ColabProgressBar()
+    monitor = _pbar.transfer_monitor
+except ImportError:
+    from dt_mooc.utils import plain_progress_monitor as monitor
 
 
 class Storage:
@@ -44,7 +49,7 @@ class Storage:
         # upload the model
         print(f'Uploading model `{name}`...')
         handler = self._space.upload(source, destination)
-        handler.register_callback(plain_progress_monitor)
+        handler.register_callback(monitor)
         # wait for the upload to finish
         handler.join()
         print(f'\nModel successfully uploaded!')
