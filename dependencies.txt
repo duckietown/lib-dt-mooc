@@ -1,0 +1,2 @@
+# LIST YOUR LIBRARY DEPENDENCIES HERE
+dt-data-api-daffy>=0.1.8
