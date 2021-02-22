@@ -16,7 +16,7 @@ class Storage:
 
     @staticmethod
     def export_model(name: str, model: torch.nn.Module, input: torch.Tensor):
-        if not re.match('^[0-9a-zA-Z-_.]+$', name):
+        if re.match('^[0-9a-zA-Z-_.]+$', name) is None:
             raise ValueError("The model name can only container letters, numbers and these "
                              "symbols '.,-,_'")
         # ---
@@ -42,7 +42,9 @@ class Storage:
         source = f"{name}.onnx"
         destination = os.path.join(self._folder, 'nn_models', f"{name}.onnx")
         # upload the model
+        print(f'Uploading model `{name}`...')
         handler = self._space.upload(source, destination)
         handler.register_callback(plain_progress_monitor)
         # wait for the upload to finish
         handler.join()
+        print(f'\nModel successfully uploaded!')
