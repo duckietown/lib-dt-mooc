@@ -31,7 +31,6 @@ def get_dfe(path):
     :param path: Takes a path to a file
     :return: (directory of file, filename without the extension, file's extension)
     """
-    assert os.path.isfile(path), f"The path '{path}' must point to a file"
 
     dir, file = os.path.split(path)
 

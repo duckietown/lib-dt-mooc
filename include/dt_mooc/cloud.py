@@ -94,6 +94,7 @@ class Storage:
 
         return h
 
+    # https://github.com/duckietown/lib-dt-data-api/blob/7d53ca7f6dc6b73527c22b3807b21cd33f8e0673/src/dt_data_api/storage.py#L25
     def _upload(self, new_filename, files):
         try:    # promote to iterable if it isn't one
             iter(files)
@@ -110,8 +111,30 @@ class Storage:
             handler.register_callback(monitor)
             # wait for the upload to finish
             handler.join()  # todo can probably not join after every file, will clean this up if we need a faster version
-            print(f'\nFile `{old_filename+"."+ext}` successfully uploaded! It will now found at `{destination}`.')
+            print(f'\nFile `{old_filename+"."+ext}` successfully uploaded! It will now be found at `{destination}`.')
 
+    # https://github.com/duckietown/lib-dt-data-api/blob/7d53ca7f6dc6b73527c22b3807b21cd33f8e0673/src/dt_data_api/storage.py#L25
+    def _download(self, prefix, destination_directory):
+        """
+        Downloads all files associated with the given name (i.e., all files of that name no matter the extension
+
+        :param filename:
+        :return:
+        """
+        all_files_for_prefix = self._space.list_objects(prefix)
+
+        for file in all_files_for_prefix:  # for each file
+            _, old_filename, ext = get_dfe(file)  # split into dir, filename, extension
+            full_old_filename = f"{old_filename}.{ext}"
+            dest = os.path.join(destination_directory, full_old_filename)
+            print(f'Downloading file `{full_old_filename}`...')
+            handler = self._space.download(file, dest, force=True)
+            handler.register_callback(monitor)
+            handler.join()
+            print(f'\nFile `{full_old_filename}` successfully uploaded! It will now be found at `{dest}`.')
+
+    def download_files(self, generic_file_name, destination_directory):
+        self._download(os.path.join(self._folder, 'nn_models', generic_file_name), destination_directory)
 
     def upload_model(self, name: str, model: torch.nn.Module, input: torch.Tensor):
         # export the model
@@ -131,6 +154,8 @@ if __name__ == "__main__":
     token = sys.argv[1]
     pt = sys.argv[2]
     store = Storage(token)
+
+    store.download_files("yolov5", ".")
 
     import sys
 
