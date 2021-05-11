@@ -1,6 +1,7 @@
 import os
 import re
 import struct
+import getpass
 
 import torch
 from dt_data_api import DataClient
@@ -21,13 +22,16 @@ class Storage:
         self._space = self._client.storage("user")
         self._folder = 'courses/mooc/2021/data/nn_models'
 
-        if we_are_running_on_the_jetson():
-            self._cache_directory = "/data/nn_models"
-        else:
-            self._cache_directory = f"/home/{run('echo $USER')}/.dt-shell/nn_models"
-            if not os.path.exists(self._cache_directory):
-                os.makedirs(self._cache_directory)
+        self._cache_directory = "/data"
+        if not os.path.exists(self._cache_directory):
+            self._cache_directory = "/code/src/"
+        if not os.path.exists(self._cache_directory):
+            user = getpass.getuser()
+            self._cache_directory = f"/home/{user}/.dt-shell"
+        self._cache_directory += "/nn_models"
 
+        if not os.path.exists(self._cache_directory):
+            os.makedirs(self._cache_directory)
 
     @staticmethod
     def export_model(name: str, model: torch.nn.Module, input: torch.Tensor):
@@ -214,7 +218,7 @@ class Storage:
 
 if __name__ == "__main__":
     token = sys.argv[1]
-    pt = sys.argv[2]
+    #pt = sys.argv[2]
     store = Storage(token)
     #store.is_hash_found_locally("yolov5", ".")
 
