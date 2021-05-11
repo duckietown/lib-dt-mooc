@@ -19,7 +19,15 @@ class Storage:
     def __init__(self, token: str):
         self._client = DataClient(token)
         self._space = self._client.storage("user")
-        self._folder = 'courses/mooc/2021/data'
+        self._folder = 'courses/mooc/2021/data/nn_models'
+
+        if we_are_running_on_the_jetson():
+            self._cache_directory = "/data/nn_models"
+        else:
+            self._cache_directory = f"/home/{run('echo $USER')}/.dt-shell/nn_models"
+            if not os.path.exists(self._cache_directory):
+                os.makedirs(self._cache_directory)
+
 
     @staticmethod
     def export_model(name: str, model: torch.nn.Module, input: torch.Tensor):
@@ -104,7 +112,7 @@ class Storage:
         for file in files:  # for each file
             dir, old_filename, ext = get_dfe(file)  # split into dir, filename, extension
 
-            destination = os.path.join(self._folder, 'nn_models', f"{new_filename}.{ext}")  # means that we rename but keep the extension!
+            destination = os.path.join(self._folder, f"{new_filename}.{ext}")  # means that we rename but keep the extension!
 
             print(f'Uploading file `{old_filename+"."+ext}`...')
             handler = self._space.upload(file, destination)
@@ -114,34 +122,88 @@ class Storage:
             print(f'\nFile `{old_filename+"."+ext}` successfully uploaded! It will now be found at `{destination}`.')
 
     # https://github.com/duckietown/lib-dt-data-api/blob/7d53ca7f6dc6b73527c22b3807b21cd33f8e0673/src/dt_data_api/storage.py#L25
-    def _download(self, prefix, destination_directory):
+    def _download(self, prefix, destination_directory=None, filter_fun=lambda _: True):
         """
         Downloads all files associated with the given name (i.e., all files of that name no matter the extension
 
         :param filename:
-        :return:
+        :return: the downloaded file names
         """
+        if destination_directory is None:
+            destination_directory = self._cache_directory
+
         all_files_for_prefix = self._space.list_objects(prefix)
+        all_files_for_prefix = filter(filter_fun, all_files_for_prefix)
+
+        downloaded_filenames = []
 
         for file in all_files_for_prefix:  # for each file
             _, old_filename, ext = get_dfe(file)  # split into dir, filename, extension
             full_old_filename = f"{old_filename}.{ext}"
+            downloaded_filenames.append(full_old_filename)
             dest = os.path.join(destination_directory, full_old_filename)
             print(f'Downloading file `{full_old_filename}`...')
             handler = self._space.download(file, dest, force=True)
             handler.register_callback(monitor)
             handler.join()
-            print(f'\nFile `{full_old_filename}` successfully uploaded! It will now be found at `{dest}`.')
+            print(f'\nFile `{full_old_filename}` successfully downloaded! It will now be found at `{dest}`.')
 
-    def download_files(self, generic_file_name, destination_directory):
-        self._download(os.path.join(self._folder, 'nn_models', generic_file_name), destination_directory)
+        return downloaded_filenames
+
+    def download_files(self, generic_file_name, destination_directory=None):
+        """
+        Downloads files to the destination directory. By default, this is our cache, so that future downloads can
+        benefit from the cache. On AMD64 though, this is problematic: it means that the users would need to mount the
+        cache directory in their dockers. So they can specify a path if they want to.
+
+        :param generic_file_name: shared filename for all files to download
+        :param destination_directory:
+        :return:
+        """
+        if not self.is_hash_found_locally(generic_file_name):
+            self._download(os.path.join(self._folder, generic_file_name), destination_directory)
+            print("As a sanity check, is the hash file now found locally?")
+
+            if self.is_hash_found_locally(generic_file_name):
+                print("It is")
+            else:
+                print("It wasn't. Contact us for help.")
+
+        else:
+            print(f"Your files were not downloaded because they are already downloaded. You can find them at {os.path.join(self._cache_directory, generic_file_name)}")
+
+    def is_hash_found_locally(self, generic_file_name, cache_directory=None):
+        if cache_directory is None:
+            cache_directory = self._cache_directory
+
+        if not os.path.exists(os.path.join(cache_directory, generic_file_name+".sha256")):
+            return False
+
+        temp_dir = run("mktemp -d")
+        print(f"We will download the hash file to {temp_dir}")
+        sha_file = self._download(os.path.join(self._folder, generic_file_name), temp_dir, filter_fun=lambda x: x.endswith(".sha256"))
+
+        assert len(sha_file) == 1, "Found more than one hash in the cloud for your files. Something is wrong"
+
+        with open(os.path.join(temp_dir, sha_file[0]), "r") as f:
+            sha = f.read()
+
+        with open(os.path.join(cache_directory, sha_file[0]), "r") as f:
+            sha2 = f.read()
+
+        is_found_locally = sha.strip() == sha2.strip()
+        if is_found_locally:
+            print(f"Found the hash file locally. It is at {os.path.join(cache_directory, sha_file[0])}.")
+        else:
+            print(f"Could not find the hash file locally.")
+        return is_found_locally
 
     def upload_model(self, name: str, model: torch.nn.Module, input: torch.Tensor):
         # export the model
         self.export_model(name, model, input)
         # define source/destination paths
         source = f"{name}.onnx"
-        destination = os.path.join(self._folder, 'nn_models', f"{name}.onnx")
+        destination = os.path.join(self._folder, f"{name}.onnx")
         # upload the model
         print(f'Uploading model `{name}`...')
         handler = self._space.upload(source, destination)
@@ -154,13 +216,15 @@ if __name__ == "__main__":
     token = sys.argv[1]
     pt = sys.argv[2]
     store = Storage(token)
+    #store.is_hash_found_locally("yolov5", ".")
 
-    store.download_files("yolov5", ".")
+    store.download_files("yolov5")
 
+"""
     import sys
 
     sys.path.insert(0, './yolov5')
     model = torch.load(pt, map_location=select_device("cpu"))['model'].float()  # load to FP32
     model.to(select_device("cpu")).eval()
 
-    store.upload_yolov5("yolov5", model, pt)
+    store.upload_yolov5("yolov5", model, pt)"""

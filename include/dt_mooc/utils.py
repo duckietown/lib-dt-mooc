@@ -53,3 +53,12 @@ def run(input, exception_on_failure=False):
             raise e
         program_output = e.output
     return program_output.strip()
+
+def we_are_running_on_the_jetson():
+    ret = run("lscpu | awk '/Architecture:/{print $2}'", exception_on_failure=True)
+    if ret == "x86_64":
+        return False
+    elif ret == "aarch64":
+        return True
+    else:
+        raise EnvironmentError(f"We are not compatible with your `{ret}` architecture.")
