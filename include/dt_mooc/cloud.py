@@ -22,16 +22,16 @@ class Storage:
         self._space = self._client.storage("user")
         self._folder = 'courses/mooc/2021/data/nn_models'
 
-        self._cache_directory = "/data"
-        if not os.path.exists(self._cache_directory):
-            self._cache_directory = "/code/src/"
-        if not os.path.exists(self._cache_directory):
+        self.cache_directory = "/data"
+        if not os.path.exists(self.cache_directory):
+            self.cache_directory = "/code/src/"
+        if not os.path.exists(self.cache_directory):
             user = getpass.getuser()
-            self._cache_directory = f"/home/{user}/.dt-shell"
-        self._cache_directory += "/nn_models"
+            self.cache_directory = f"/home/{user}/.dt-shell"
+        self.cache_directory += "/nn_models"
 
-        if not os.path.exists(self._cache_directory):
-            os.makedirs(self._cache_directory)
+        if not os.path.exists(self.cache_directory):
+            os.makedirs(self.cache_directory)
 
     @staticmethod
     def export_model(name: str, model: torch.nn.Module, input: torch.Tensor):
@@ -134,7 +134,7 @@ class Storage:
         :return: the downloaded file names
         """
         if destination_directory is None:
-            destination_directory = self._cache_directory
+            destination_directory = self.cache_directory
 
         all_files_for_prefix = self._space.list_objects(prefix)
         all_files_for_prefix = filter(filter_fun, all_files_for_prefix)
@@ -174,11 +174,11 @@ class Storage:
                 print("It wasn't. Contact us for help.")
 
         else:
-            print(f"Your files were not downloaded because they are already downloaded. You can find them at {os.path.join(self._cache_directory, generic_file_name)}")
+            print(f"Your files were not downloaded because they are already downloaded. You can find them at {os.path.join(self.cache_directory, generic_file_name)}")
 
     def is_hash_found_locally(self, generic_file_name, cache_directory=None):
         if cache_directory is None:
-            cache_directory = self._cache_directory
+            cache_directory = self.cache_directory
 
         if not os.path.exists(os.path.join(cache_directory, generic_file_name+".sha256")):
             return False
