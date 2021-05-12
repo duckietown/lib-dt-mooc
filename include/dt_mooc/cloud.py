@@ -23,11 +23,11 @@ class Storage:
         self._folder = 'courses/mooc/2021/data/nn_models'
 
         self.cache_directory = "/data"
-        if not os.path.exists(self.cache_directory):
+        if os.path.exists("/code/solution/src"):
             self.cache_directory = "/code/src/"
         if not os.path.exists(self.cache_directory):
             user = getpass.getuser()
-            self.cache_directory = f"/home/{user}/.dt-shell"
+            self.cache_directory = f"/home/{user}/.dt-nn-models"
         self.cache_directory += "/nn_models"
 
         if not os.path.exists(self.cache_directory):
@@ -156,7 +156,7 @@ class Storage:
 
     def download_files(self, generic_file_name, destination_directory=None):
         """
-        Downloads files to the destination directory. By default, this is our cache, so that future downloads can
+        Downloads files to the destination directory. By default, that is our cache, so that future downloads can
         benefit from the cache. On AMD64 though, this is problematic: it means that the users would need to mount the
         cache directory in their dockers. So they can specify a path if they want to.
 
