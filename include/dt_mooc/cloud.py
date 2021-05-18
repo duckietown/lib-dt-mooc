@@ -3,7 +3,11 @@ import re
 import struct
 import getpass
 
-import torch
+try:
+    import torch
+except ImportError:
+    print("Tried to import torch, but couldn't. Continuing without it, you might not need it.")
+
 from dt_data_api import DataClient
 
 try:
@@ -168,7 +172,7 @@ class Storage:
             self._download(os.path.join(self._folder, generic_file_name), destination_directory)
             print("As a sanity check, is the hash file now found locally?")
 
-            if self.is_hash_found_locally(generic_file_name):
+            if self.is_hash_found_locally(generic_file_name, destination_directory):
                 print("It is")
             else:
                 print("It wasn't. Contact us for help.")
