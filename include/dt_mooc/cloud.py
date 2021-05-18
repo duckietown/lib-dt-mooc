@@ -206,7 +206,7 @@ class Storage:
             print(f"Could not find the hash file locally.")
         return is_found_locally
 
-    def upload_model(self, name: str, model: torch.nn.Module, input: torch.Tensor):
+    def upload_model(self, name: str, model, input):
         # export the model
         self.export_model(name, model, input)
         # define source/destination paths
