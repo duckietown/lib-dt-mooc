@@ -38,7 +38,7 @@ class Storage:
             os.makedirs(self.cache_directory)
 
     @staticmethod
-    def export_model(name: str, model: torch.nn.Module, input: torch.Tensor):
+    def export_model(name: str, model, input):
         if re.match('^[0-9a-zA-Z-_.]+$', name) is None:
             raise ValueError("The model name can only container letters, numbers and these "
                              "symbols '.,-,_'")
