@@ -14,7 +14,7 @@ try:
     from dt_mooc.colab import ColabProgressBar
     _pbar = ColabProgressBar()
     monitor = _pbar.transfer_monitor
-except Exception:   # ImportError is too specific
+except Exception:   # ImportError is too specific..
     from dt_mooc.utils import plain_progress_monitor as monitor
 
 from dt_mooc.utils import *
