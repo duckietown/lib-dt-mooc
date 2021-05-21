@@ -238,10 +238,10 @@ if __name__ == "__main__":
     token = sys.argv[1]
     #pt = sys.argv[2]
     store = Storage(token)
-    store.is_hash_found_locally("yolov3", ".")
+    store.is_hash_found_locally("yolov2", ".")
 
 
-    store.download_files("yolov3")
+    store.download_files("yolov2")
 
 """
     import sys
