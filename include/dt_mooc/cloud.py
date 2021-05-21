@@ -199,6 +199,7 @@ class Storage:
             file_to_download,
             temp_dir,
             filter_fun=lambda x: x.split("/")[-1] == generic_file_name+".sha256"
+
         )
         print("Found sha files:", sha_file)
 
