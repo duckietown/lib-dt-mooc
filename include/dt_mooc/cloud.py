@@ -141,8 +141,13 @@ class Storage:
             destination_directory = self.cache_directory
 
         all_files_for_prefix = self._space.list_objects(prefix)
+        print("all files before filter")
+        for file in all_files_for_prefix:
+            print(file)
         all_files_for_prefix = filter(filter_fun, all_files_for_prefix)
-
+        for file in all_files_for_prefix:
+            print(file)
+        print("all_files after filter")
         downloaded_filenames = []
 
         for file in all_files_for_prefix:  # for each file
