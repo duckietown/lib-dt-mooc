@@ -192,7 +192,7 @@ class Storage:
         sha_file = self._download(
             os.path.join(self._folder, generic_file_name),
             temp_dir,
-            filter_fun=lambda x: x.endswith(".sha256") and x.startswith(generic_file_name)
+            filter_fun=lambda x: x == generic_file_name+".sha256"
         )
 
         assert len(sha_file) == 1, "Found more than one hash in the cloud for your files. Something is wrong"
