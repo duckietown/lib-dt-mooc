@@ -196,6 +196,8 @@ class Storage:
         )
         print("Found sha files:", sha_file)
 
+        if len(sha_file) == 0:
+            print("Found no sha file. Something is wrong with your initial upload.")
         assert len(sha_file) == 1, "Found more than one hash in the cloud for your files. Something is wrong"
 
         with open(os.path.join(temp_dir, sha_file[0]), "r") as f:
