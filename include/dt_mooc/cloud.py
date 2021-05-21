@@ -194,6 +194,7 @@ class Storage:
             temp_dir,
             filter_fun=lambda x: x == generic_file_name+".sha256"
         )
+        print("Found sha files:", sha_file)
 
         assert len(sha_file) == 1, "Found more than one hash in the cloud for your files. Something is wrong"
 
