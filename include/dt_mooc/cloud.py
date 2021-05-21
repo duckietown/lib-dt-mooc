@@ -168,7 +168,7 @@ class Storage:
         :param destination_directory:
         :return:
         """
-        if not self.is_hash_found_locally(generic_file_name):
+        if not self.is_hash_found_locally(generic_file_name, destination_directory):
             self._download(os.path.join(self._folder, generic_file_name), destination_directory)
             print("As a sanity check, is the hash file now found locally?")
 
@@ -192,7 +192,7 @@ class Storage:
         sha_file = self._download(
             os.path.join(self._folder, generic_file_name),
             temp_dir,
-            filter_fun=lambda x: x == generic_file_name+".sha256"
+            filter_fun=lambda x: x.split("/")[-1] == generic_file_name+".sha256"
         )
         print("Found sha files:", sha_file)
 
@@ -231,9 +231,10 @@ if __name__ == "__main__":
     token = sys.argv[1]
     #pt = sys.argv[2]
     store = Storage(token)
-    #store.is_hash_found_locally("yolov5", ".")
+    store.is_hash_found_locally("yolov4", ".")
 
-    store.download_files("yolov5")
+
+    store.download_files("yolov4")
 
 """
     import sys
