@@ -189,7 +189,11 @@ class Storage:
 
         temp_dir = run("mktemp -d")
         print(f"We will download the hash file to {temp_dir}")
-        sha_file = self._download(os.path.join(self._folder, generic_file_name), temp_dir, filter_fun=lambda x: x.endswith(".sha256"))
+        sha_file = self._download(
+            os.path.join(self._folder, generic_file_name),
+            temp_dir,
+            filter_fun=lambda x: x.endswith(".sha256") and x.startswith(generic_file_name)
+        )
 
         assert len(sha_file) == 1, "Found more than one hash in the cloud for your files. Something is wrong"
 
