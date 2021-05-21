@@ -194,10 +194,11 @@ class Storage:
 
         temp_dir = run("mktemp -d")
         print(f"We will download the hash file to {temp_dir}")
+        file_to_download = os.path.join(self._folder, generic_file_name)
         sha_file = self._download(
-            os.path.join(self._folder, generic_file_name),
+            file_to_download,
             temp_dir,
-            filter_fun=lambda x: x == generic_file_name+".sha256"
+            filter_fun=lambda x: x == file_to_download+".sha256"
         )
         print("Found sha files:", sha_file)
 
