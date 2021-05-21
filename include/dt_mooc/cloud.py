@@ -144,7 +144,7 @@ class Storage:
         print("all files before filter")
         for file in all_files_for_prefix:
             print(file)
-        all_files_for_prefix = filter(filter_fun, all_files_for_prefix)
+        all_files_for_prefix = list(filter(filter_fun, all_files_for_prefix))
         for file in all_files_for_prefix:
             print(file)
         print("all_files after filter")
@@ -237,10 +237,10 @@ if __name__ == "__main__":
     token = sys.argv[1]
     #pt = sys.argv[2]
     store = Storage(token)
-    store.is_hash_found_locally("yolov4", ".")
+    store.is_hash_found_locally("yolov3", ".")
 
 
-    store.download_files("yolov4")
+    store.download_files("yolov3")
 
 """
     import sys
