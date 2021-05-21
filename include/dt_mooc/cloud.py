@@ -3,14 +3,18 @@ import re
 import struct
 import getpass
 
-import torch
+try:
+    import torch
+except ImportError:
+    print("Tried to import torch, but couldn't. Continuing without it, you might not need it.")
+
 from dt_data_api import DataClient
 
 try:
     from dt_mooc.colab import ColabProgressBar
     _pbar = ColabProgressBar()
     monitor = _pbar.transfer_monitor
-except ImportError:
+except Exception:   # ImportError is too specific..
     from dt_mooc.utils import plain_progress_monitor as monitor
 
 from dt_mooc.utils import *
@@ -34,7 +38,7 @@ class Storage:
             os.makedirs(self.cache_directory)
 
     @staticmethod
-    def export_model(name: str, model: torch.nn.Module, input: torch.Tensor):
+    def export_model(name: str, model, input):
         if re.match('^[0-9a-zA-Z-_.]+$', name) is None:
             raise ValueError("The model name can only container letters, numbers and these "
                              "symbols '.,-,_'")
@@ -168,7 +172,7 @@ class Storage:
             self._download(os.path.join(self._folder, generic_file_name), destination_directory)
             print("As a sanity check, is the hash file now found locally?")
 
-            if self.is_hash_found_locally(generic_file_name):
+            if self.is_hash_found_locally(generic_file_name, destination_directory):
                 print("It is")
             else:
                 print("It wasn't. Contact us for help.")
@@ -202,7 +206,7 @@ class Storage:
             print(f"Could not find the hash file locally.")
         return is_found_locally
 
-    def upload_model(self, name: str, model: torch.nn.Module, input: torch.Tensor):
+    def upload_model(self, name: str, model, input):
         # export the model
         self.export_model(name, model, input)
         # define source/destination paths

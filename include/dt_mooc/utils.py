@@ -1,6 +1,5 @@
 import sys
 import os
-import torch
 
 
 def plain_progress_monitor(handler, interactive: bool = True):
@@ -13,6 +12,7 @@ def plain_progress_monitor(handler, interactive: bool = True):
 # stolen from https://github.com/duckietown/yolov5/blob/dt-obj-det/utils/torch_utils.py, but not yolov5-restricted: this
 # is useful for all torch conversions
 def select_device(device='', batch_size=None):
+    import torch
     # device = 'cpu' or '0' or '0,1,2,3'
     cpu = device.lower() == 'cpu'
     if cpu:
