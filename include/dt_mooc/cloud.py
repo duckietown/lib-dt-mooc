@@ -175,9 +175,9 @@ class Storage:
             print("As a sanity check, is the hash file now found locally?")
 
             if self.is_hash_found_locally(generic_file_name, destination_directory):
-                print("It is")
+                print("Sanity check passed.")
             else:
-                print("It wasn't. Contact us for help.")
+                print("Sanity check failed. Contact us for help.")
 
         else:
             print(f"Your files were not downloaded because they are already downloaded. You can find them at {os.path.join(self.cache_directory, generic_file_name)}")
