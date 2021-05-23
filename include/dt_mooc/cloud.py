@@ -210,9 +210,9 @@ class Storage:
         with open(os.path.join(cache_directory, sha_file[0]), "r") as f:
             sha2 = f.read()
 
-        print("Comparing the first hash file,")
+        print("Comparing the first hash file (remote),")
         print(f"\t{sha}")
-        print(", to the second one,")
+        print(", to the second one (local),")
         print(f"\t{sha2}")
 
         is_found_locally = sha.strip() == sha2.strip()
