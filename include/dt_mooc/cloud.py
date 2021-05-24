@@ -19,6 +19,8 @@ except Exception:   # ImportError is too specific..
 
 from dt_mooc.utils import *
 
+from os.path import expanduser
+
 class Storage:
 
     def __init__(self, token: str):
@@ -30,8 +32,8 @@ class Storage:
         if os.path.exists("/code/solution/src"):
             self.cache_directory = "/code/src/"
         if not os.path.exists(self.cache_directory):
-            user = getpass.getuser()
-            self.cache_directory = f"/home/{user}/.dt-nn-models"
+            home = expanduser("~")
+            self.cache_directory = f"{home}/.dt-nn-models"
         self.cache_directory += "/nn_models"
 
         if not os.path.exists(self.cache_directory):
