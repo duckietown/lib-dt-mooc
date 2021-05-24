@@ -143,11 +143,10 @@ class Storage:
             destination_directory = self.cache_directory
 
         all_files_for_prefix = self._space.list_objects(prefix)
+        print("All files for this filename:")
         for file in all_files_for_prefix:
             print(file)
         all_files_for_prefix = list(filter(filter_fun, all_files_for_prefix))
-        for file in all_files_for_prefix:
-            print(file)
         downloaded_filenames = []
 
         for file in all_files_for_prefix:  # for each file
@@ -178,9 +177,9 @@ class Storage:
             print("As a sanity check, is the hash file now found locally?")
 
             if self.is_hash_found_locally(generic_file_name, destination_directory):
-                print("It is")
+                print("Sanity check passed.")
             else:
-                print("It wasn't. Contact us for help.")
+                print("Sanity check failed. Contact us for help.")
 
         else:
             print(f"Your files were not downloaded because they are already downloaded. You can find them at {os.path.join(self.cache_directory, generic_file_name)}")
@@ -213,11 +212,16 @@ class Storage:
         with open(os.path.join(cache_directory, sha_file[0]), "r") as f:
             sha2 = f.read()
 
+        print("Comparing the first hash file (remote),")
+        print(f"\t{sha}")
+        print(", to the second one (local),")
+        print(f"\t{sha2}")
+
         is_found_locally = sha.strip() == sha2.strip()
         if is_found_locally:
-            print(f"Found the hash file locally. It is at {os.path.join(cache_directory, sha_file[0])}.")
+            print(f"Equality: found the hash file locally. It is at {os.path.join(cache_directory, sha_file[0])}.")
         else:
-            print(f"Could not find the hash file locally.")
+            print(f"Non equal: could not find the hash file locally.")
         return is_found_locally
 
     def upload_model(self, name: str, model, input):
@@ -238,10 +242,8 @@ if __name__ == "__main__":
     token = sys.argv[1]
     #pt = sys.argv[2]
     store = Storage(token)
-    store.is_hash_found_locally("yolov2", ".")
 
-
-    store.download_files("yolov2")
+    store.download_files("yolov5")
 
 """
     import sys
