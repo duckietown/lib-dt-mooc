@@ -7,7 +7,8 @@ class ColabProgressBar:
         self._pbar = display(ColabProgressBar._progress(0, 100), display_id=True)
 
     def update(self, progress: int):
-        self._pbar.update(self._progress(progress))
+        if self._pbar is not None:
+            self._pbar.update(self._progress(progress))
 
     def transfer_monitor(self, handler):
         self.update(handler.progress.percentage)
