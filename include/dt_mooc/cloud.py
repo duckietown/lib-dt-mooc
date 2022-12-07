@@ -1,12 +1,12 @@
 import os
 import re
 import struct
-import getpass
 
 try:
     import torch
 except ImportError:
     print("Tried to import torch, but couldn't. Continuing without it, you might not need it.")
+    torch = None
 
 from dt_data_api import DataClient
 
@@ -20,6 +20,7 @@ except Exception:   # ImportError is too specific..
 from dt_mooc.utils import *
 
 from os.path import expanduser
+
 
 class Storage:
 
@@ -66,13 +67,17 @@ class Storage:
         pt_model,
         pt_weights_path,
     ):
-        # Get model
+        # STEP 1: GET MODEL AS FP32 ON CPU
         device = select_device('cpu')
         model = pt_model.to(device).float()  # load to FP32
         model.eval()
 
+        # STEP 2: WRITE HASH
+        self.hash(pt_weights_path)
+        hash_path = pt_weights_path+".sha256"
+
         # UPLOAD .pt
-        self._upload(destination_name, [pt_weights_path])
+        self._upload(destination_name, [pt_weights_path, hash_path])
 
     def upload_yolov5(self, destination_name, pt_model, pt_weights_path): # might want to use template pattern if we want to make a bunch of these
         wts_path = pt_weights_path + '.wts'
