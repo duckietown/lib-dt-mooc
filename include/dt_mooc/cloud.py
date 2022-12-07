@@ -1,6 +1,7 @@
 import os
 import re
 import struct
+from pathlib import Path
 
 try:
     import torch
@@ -67,17 +68,23 @@ class Storage:
         pt_model,
         pt_weights_path,
     ):
-        # STEP 1: GET MODEL AS FP32 ON CPU
+        # convert to fp16
         device = select_device('cpu')
-        model = pt_model.to(device).float()  # load to FP32
+        model = pt_model.to(device).float().half()  # load to FP32
         model.eval()
 
-        # STEP 2: WRITE HASH
-        self.hash(pt_weights_path)
-        hash_path = pt_weights_path+".sha256"
+        # save to disk
+        fp16_pt_weights_path = os.path.join(
+            os.path.dirname(pt_weights_path), f"{Path(pt_weights_path).stem}hf.pt"
+        )
+        torch.save(model, fp16_pt_weights_path)
+
+        # compute hash
+        self.hash(fp16_pt_weights_path)
+        hash_path = fp16_pt_weights_path+".sha256"
 
         # UPLOAD .pt
-        self._upload(destination_name, [pt_weights_path, hash_path])
+        self._upload(destination_name, [fp16_pt_weights_path, hash_path])
 
     def upload_yolov5(self, destination_name, pt_model, pt_weights_path): # might want to use template pattern if we want to make a bunch of these
         wts_path = pt_weights_path + '.wts'
@@ -217,7 +224,6 @@ class Storage:
             file_to_download,
             temp_dir,
             filter_fun=lambda x: x.split("/")[-1] == generic_file_name+".sha256"
-
         )
         print("Found sha files:", sha_file)
 
