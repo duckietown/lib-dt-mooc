@@ -21,7 +21,7 @@ build:
 	python3 setup.py sdist
 
 clean:
-	rm -rf dist/ build/ dt_mooc_2021.egg-info/
+	rm -rf dist/ build/ dt_mooc.egg-info/
 
 format:
 	yapf -r -i -p -vv ${ROOT_DIR}
