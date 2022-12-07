@@ -26,7 +26,7 @@ class Storage:
     def __init__(self, token: str):
         self._client = DataClient(token)
         self._space = self._client.storage("user")
-        self._folder = 'courses/mooc/2021/data/nn_models'
+        self._folder = 'courses/mooc/objdet/data/nn_models'
 
         self.cache_directory = "/data"
         if os.path.exists("/code/solution/src"):

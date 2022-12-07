@@ -3,13 +3,13 @@ from setuptools import setup, find_packages
 
 # :==> Fill in your project data here
 version = '0.0.0'
-library_name = 'dt-mooc-2021'
-library_webpage = 'https://github.com/duckietown/lib-dt-mooc-2021'
+library_name = 'dt-mooc'
+library_webpage = 'https://github.com/duckietown/lib-dt-mooc'
 maintainer = 'Andrea F. Daniele'
 maintainer_email = 'afdaniele@ttic.edu'
-short_description = 'Python library for the 2021 "Self-Driving Cars with Duckietown" course on edX'
+short_description = 'Python library for the "Self-Driving Cars with Duckietown" course on edX'
 full_description = """
-Python library to support student activities in the 2021 "Self-Driving Cars with Duckietown" 
+Python library to support student activities in the "Self-Driving Cars with Duckietown" 
 course on edX. 
 """
 # <==: Fill in your project data here
