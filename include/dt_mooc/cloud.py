@@ -23,12 +23,12 @@ from os.path import expanduser
 
 class Storage:
 
-    def __init__(self, token: str):
+    def __init__(self, token: str, cache_dir: str = None):
         self._client = DataClient(token)
         self._space = self._client.storage("user")
         self._folder = 'courses/mooc/objdet/data/nn_models'
 
-        self.cache_directory = "/data"
+        self.cache_directory = cache_dir or "/data"
         if os.path.exists("/code/solution/src"):
             self.cache_directory = "/code/src/"
         if not os.path.exists(self.cache_directory):
