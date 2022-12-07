@@ -2,7 +2,7 @@ import os
 from setuptools import setup, find_packages
 
 # :==> Fill in your project data here
-version = '0.0.3'
+version = '0.0.4'
 library_name = 'dt-mooc'
 library_webpage = 'https://github.com/duckietown/lib-dt-mooc'
 maintainer = 'Andrea F. Daniele'
